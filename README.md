@@ -18,6 +18,11 @@ var swaggerMongoose = require('swagger-mongoose');
 
 var swagger = fs.readFileSync('./petstore.json');
 var Pet = swaggerMongoose.compile(swagger).models.Pet;
+var myPet = new Pet({
+    id: 123,
+    name: 'Fluffy'
+    });
+myPet.save();
 ```
 
 ## Limitations

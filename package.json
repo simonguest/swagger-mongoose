@@ -1,0 +1,36 @@
+{
+  "name": "swagger-mongoose",
+  "version": "0.1.0",
+  "description": "Generate Mongoose Schemas and Models from your Swagger Documents",
+  "main": "./lib/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "lodash": "^3.6.0",
+    "mongoose": "^4.0.1"
+  },
+  "devDependencies": {
+    "chai": "^2.2.0",
+    "mockgoose": "^1.10.7"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/simonguest/swagger-mongoose"
+  },
+  "keywords": [
+    "swagger",
+    "mongoose",
+    "mongo",
+    "schema"
+  ],
+  "author": "Simon Guest <me@simonguest.com> (http://github.com/simonguest)",
+  "license": "Apache 2",
+  "bugs": {
+    "url": "https://github.com/simonguest/swagger-mongoose/issues"
+  },
+  "homepage": "https://github.com/simonguest/swagger-mongoose"
+}

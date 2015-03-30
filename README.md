@@ -1,11 +1,13 @@
 ![Travis Status](https://travis-ci.org/simonguest/swagger-mongoose.svg?branch=master)
 # swagger-mongoose
 
-## Generate Mongoose Schemas and Models from your Swagger Documents
+Generate Mongoose Schemas and Models from your Swagger Documents
 
 ## Installation
 
-  npm install swagger-mongoose
+```js
+npm install swagger-mongoose
+```
 
 ## Usage
 

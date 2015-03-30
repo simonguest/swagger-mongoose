@@ -1,7 +1,7 @@
 {
   "name": "swagger-mongoose",
   "version": "0.1.0",
-  "description": "Generate Mongoose Schemas and Models from your Swagger Documents",
+  "description": "Generate mongoose schemas and models from swagger documents",
   "main": "./lib/index.js",
   "directories": {
     "test": "test"

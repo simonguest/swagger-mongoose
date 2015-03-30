@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "chai": "^2.2.0",
+    "mocha": "^2.2.1",
     "mockgoose": "^1.10.7"
   },
   "scripts": {

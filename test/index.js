@@ -13,11 +13,13 @@ describe('swagger-mongoose tests', function () {
     mongoose.connect('mongodb://localhost/schema-test');
   });
 
-  after(function () {
+  afterEach(function () {
     mongoose.disconnect();
+    delete mongoose.models.Pet;
+    delete mongoose.models.Error;
   });
 
-  it('should create an example pet', function (done) {
+  it('should create an example pet and return all valid properties', function (done) {
     var swagger = fs.readFileSync('./test/petstore.json');
     var Pet = swaggerMongoose.compile(swagger).models.Pet;
     var myPet = new Pet({
@@ -43,6 +45,57 @@ describe('swagger-mongoose tests', function () {
         assert(data.friends.length === 2, 'Friends mismatch');
         assert(data.favoriteNumbers.length === 4, 'Favorite numbers mismatch');
         assert(!data.notAKey, 'Strict schema mismatch');
+        done();
+      });
+    });
+  });
+
+  it('should create an example pet from a file', function (done) {
+    var swagger = fs.readFileSync('./test/petstore.json');
+    var Pet = swaggerMongoose.compile(swagger).models.Pet;
+    var myPet = new Pet({
+      id: 123,
+      name: 'Fluffy'
+    });
+    myPet.save(function (err) {
+      if (err) throw err;
+      Pet.findOne({id: 123}, function (err, data) {
+        assert(data.id === 123, 'ID mismatch');
+        assert(data.name === 'Fluffy', 'Name mismatch');
+        done();
+      });
+    });
+  });
+
+  it('should create an example pet from a JSON object', function (done) {
+    var swagger = fs.readFileSync('./test/petstore.json');
+    var Pet = swaggerMongoose.compile(JSON.parse(swagger)).models.Pet;
+    var myPet = new Pet({
+      id: 123,
+      name: 'Fluffy'
+    });
+    myPet.save(function (err) {
+      if (err) throw err;
+      Pet.findOne({id: 123}, function (err, data) {
+        assert(data.id === 123, 'ID mismatch');
+        assert(data.name === 'Fluffy', 'Name mismatch');
+        done();
+      });
+    });
+  });
+
+  it('should create an example pet from a string', function (done) {
+    var swagger = fs.readFileSync('./test/petstore.json');
+    var Pet = swaggerMongoose.compile(swagger.toString()).models.Pet;
+    var myPet = new Pet({
+      id: 123,
+      name: 'Fluffy'
+    });
+    myPet.save(function (err) {
+      if (err) throw err;
+      Pet.findOne({id: 123}, function (err, data) {
+        assert(data.id === 123, 'ID mismatch');
+        assert(data.name === 'Fluffy', 'Name mismatch');
         done();
       });
     });

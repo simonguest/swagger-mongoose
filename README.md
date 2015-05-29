@@ -27,11 +27,11 @@ myPet.save();
 
 ## Limitations
 
-swagger-mongoose only supports flat schemas, with the following attributes:
+swagger-mongoose supports the following attributes:
 
-  integer, long, float, double, string, password, boolean, date, dateTime, array
+  integer, long, float, double, string, password, boolean, date, dateTime, array (including nested schemas)
 
-swagger-mongoose does not yet support nested schemas or perform/create any validation from the swagger definitions (see issues if you'd like to help)
+swagger-mongoose does not yet perform/create any validation from the swagger definitions (see issues if you'd like to help)
 
 ## License
 

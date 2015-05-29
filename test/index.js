@@ -16,6 +16,7 @@ describe('swagger-mongoose tests', function () {
   afterEach(function () {
     mongoose.disconnect();
     delete mongoose.models.Pet;
+    delete mongoose.models.Address;
     delete mongoose.models.Error;
   });
 
@@ -44,6 +45,7 @@ describe('swagger-mongoose tests', function () {
         assert(data.sold === true, 'Sold mismatch');
         assert(data.friends.length === 2, 'Friends mismatch');
         assert(data.favoriteNumbers.length === 4, 'Favorite numbers mismatch');
+        assert(data.address.addressLine1 === '1 Main St.', 'Nested address mismatch');
         assert(!data.notAKey, 'Strict schema mismatch');
         done();
       });

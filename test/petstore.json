@@ -86,9 +86,18 @@
           }
         },
         "address":{
-          "addressLine1":{
-            "type":"string"
+          "type":"array",
+          "items": {
+            "$ref": "#/definitions/Address"
           }
+        }
+      }
+    },
+    "Address": {
+      "type":"object",
+      "properties": {
+        "addressLine1": {
+          "type": "string"
         }
       }
     },

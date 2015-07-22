@@ -31,9 +31,10 @@ describe('swagger-mongoose tests', function () {
       sold: true,
       friends: ['Barney', 'Fido'],
       favoriteNumbers: [1, 3, 7, 9],
-      address: {
-        addressLine1: '1 Main St.'
-      },
+      address: [
+        {addressLine1: '1 Main St.'},
+        {addressLine1: '2 Main St.'}
+        ],
       notAKey: 'test'
     });
     myPet.save(function (err) {

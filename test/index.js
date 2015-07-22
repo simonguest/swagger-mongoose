@@ -46,7 +46,8 @@ describe('swagger-mongoose tests', function () {
         assert(data.sold === true, 'Sold mismatch');
         assert(data.friends.length === 2, 'Friends mismatch');
         assert(data.favoriteNumbers.length === 4, 'Favorite numbers mismatch');
-        assert(data.address.addressLine1 === '1 Main St.', 'Nested address mismatch');
+        assert(data.address[0].addressLine1 === '1 Main St.', 'Nested address mismatch');
+        assert(data.address[1].addressLine1 === '2 Main St.', 'Nested address mismatch');
         assert(!data.notAKey, 'Strict schema mismatch');
         done();
       });

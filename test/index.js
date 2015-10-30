@@ -34,7 +34,7 @@ describe('swagger-mongoose tests', function () {
       address: [
         {addressLine1: '1 Main St.'},
         {addressLine1: '2 Main St.'}
-        ],
+      ],
       notAKey: 'test'
     });
     myPet.save(function (err) {
@@ -51,6 +51,19 @@ describe('swagger-mongoose tests', function () {
         assert(!data.notAKey, 'Strict schema mismatch');
         done();
       });
+    });
+  });
+
+  it('should not create an example without required field', function (done) {
+    var swagger = fs.readFileSync('./test/petstore.json');
+    var Pet = swaggerMongoose.compile(swagger).models.Pet;
+    var myPet = new Pet({
+      id: 123
+    });
+    myPet.save(function (err) {
+      assert(err, 'Validation error is missing');
+      assert(err.message === 'Pet validation failed', 'Unexpected error message');
+      done();
     });
   });
 

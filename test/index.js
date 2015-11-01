@@ -2,6 +2,7 @@
 var swaggerMongoose = require('./../lib/index');
 
 var fs = require('fs');
+var async = require('async');
 var mongoose = require('mongoose');
 var mockgoose = require('mockgoose');
 mockgoose(mongoose);
@@ -118,5 +119,71 @@ describe('swagger-mongoose tests', function () {
     });
   });
 
-});
+  it('should create an example person with relations to external collections', function (done) {
+    var swagger = fs.readFileSync('./test/person.json');
+    var models = swaggerMongoose.compile(swagger.toString()).models;
+    var Person = models.Person;
+    var House = models.House;
+    var Car = models.Car;
+    async.parallel({
+      house: function (cb) {
+        var house = new House({
+          description: 'Cool house',
+          lng: 50.3,
+          lat: 30
+        });
+        house.save(function (err, data) {
+          cb(err, data);
+        });
+      },
+      car: function (cb) {
+        var car = new Car({
+          provider: 'Mazda',
+          model: 'CX-5'
+        });
+        car.save(function (err, data) {
+          cb(err, data);
+        });
+      }
+    }, function (err, results) {
+      var person = new Person({
+        login: 'jb@mi6.gov',
+        firstName: 'James',
+        lastName: 'Bond',
+        houses: [
+          results.house._id
+        ],
+        car: results.car._id,
+        cars: [
+          results.car._id
+        ]
+      });
+      person.save(function (err, data) {
+        Person
+          .findOne({_id: data._id})
+          .lean()
+          .exec(function (err, newPerson) {
+            async.parallel({
+              car: function (cb) {
+                Car.findOne({_id: newPerson.cars[0]}, function (err, car) {
+                  cb(err, car);
+                });
+              },
+              house: function (cb) {
+                House.findOne({_id: newPerson.houses[0]}, function (err, house) {
+                  cb(err, house);
+                });
+              }
+            }, function (err, populated) {
+              newPerson.cars = [populated.car];
+              newPerson.houses = [populated.house];
 
+              console.log(newPerson);
+              done();
+            });
+          });
+      });
+    });
+  });
+
+});

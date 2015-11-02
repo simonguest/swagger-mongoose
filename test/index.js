@@ -153,7 +153,6 @@ describe('swagger-mongoose tests', function () {
         houses: [
           results.house._id
         ],
-        car: results.car._id,
         cars: [
           results.car._id
         ]
@@ -178,7 +177,17 @@ describe('swagger-mongoose tests', function () {
               newPerson.cars = [populated.car];
               newPerson.houses = [populated.house];
 
-              console.log(newPerson);
+              assert(newPerson.login === 'jb@mi6.gov', 'Login is incorrect');
+              assert(newPerson.firstName === 'James', 'First Name is incorrect');
+              assert(newPerson.lastName === 'Bond', 'Last Name is incorrect');
+              assert(newPerson.cars.length === 1, 'Cars content is wrong');
+              assert(newPerson.cars[0].model === 'CX-5', 'Car model is incorrect');
+              assert(newPerson.cars[0].provider === 'Mazda', 'Car provider is incorrect');
+              assert(newPerson.houses.length === 1, 'Houses content is wrong');
+              assert(newPerson.houses[0].lat === 30, 'House latitude is incorrect');
+              assert(newPerson.houses[0].lng === 50.3, 'House longitude is incorrect');
+              assert(newPerson.houses[0].description === 'Cool house', 'House description is incorrect');
+
               done();
             });
           });

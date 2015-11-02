@@ -97,8 +97,7 @@
           "items": {
             "$ref": "#/definitions/House",
             "_mongodb": {
-              "mongodbType": "objectId",
-              "mongodbRef": "House"
+              "mongodbType": "objectId"
             }
           }
         },
@@ -107,8 +106,7 @@
           "items": {
             "$ref": "#/definitions/Car",
             "_mongodb": {
-              "mongodbType": "objectId",
-              "mongodbRef": "Car"
+              "mongodbType": "objectId"
             }
           }
         }

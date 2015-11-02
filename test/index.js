@@ -125,6 +125,10 @@ describe('swagger-mongoose tests', function () {
     var Person = models.Person;
     var House = models.House;
     var Car = models.Car;
+
+    assert(Person.schema.paths.cars.options.type[0].ref === undefined, 'Ref to "car" should be undefined');
+    assert(Person.schema.paths.houses.options.type[0].ref === 'House', 'Ref to "house" should be "House"');
+
     async.parallel({
       house: function (cb) {
         var house = new House({

@@ -20,6 +20,9 @@ describe('swagger-mongoose tests', function () {
     delete mongoose.models.Pet;
     delete mongoose.models.Address;
     delete mongoose.models.Error;
+    delete mongoose.models.Person;
+    delete mongoose.models.House;
+    delete mongoose.models.Car;
   });
 
   it('should create an example pet and return all valid properties', function (done) {

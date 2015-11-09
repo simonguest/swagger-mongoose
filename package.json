@@ -10,6 +10,7 @@
     "lodash": "^3.6.0"
   },
   "devDependencies": {
+    "async": "^1.5.0",
     "chai": "^2.2.0",
     "mocha": "^2.2.1",
     "mockgoose": "^1.10.7",

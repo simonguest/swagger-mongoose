@@ -2,10 +2,12 @@
 var swaggerMongoose = require('./../lib/index');
 
 var fs = require('fs');
+var async = require('async');
 var mongoose = require('mongoose');
 var mockgoose = require('mockgoose');
 mockgoose(mongoose);
 var assert = require('chai').assert;
+var Schema = mongoose.Schema;
 
 describe('swagger-mongoose tests', function () {
 
@@ -118,5 +120,89 @@ describe('swagger-mongoose tests', function () {
     });
   });
 
-});
+  it('should create an example person with relations to external collections', function (done) {
+    var swagger = fs.readFileSync('./test/person.json');
+    var mongooseDef = fs.readFileSync('./test/person.mongoose.json');
 
+    var models = swaggerMongoose.compile(swagger.toString(), mongooseDef.toString()).models;
+
+    var Person = models.Person;
+    var House = models.House;
+    var Car = models.Car;
+
+    assert(Person.schema.paths.cars.options.type[0].type === Schema.Types.ObjectId, 'Wrong "car" type');
+    assert(Person.schema.paths.cars.options.type[0].ref === undefined, 'Ref to "car" should be undefined');
+    assert(Person.schema.paths.houses.options.type[0].type === Schema.Types.ObjectId, 'Wrong "house" type');
+    assert(Person.schema.paths.houses.options.type[0].ref === 'House', 'Ref to "house" should be "House"');
+
+    async.parallel({
+      house: function (cb) {
+        var house = new House({
+          description: 'Cool house',
+          lng: 50.3,
+          lat: 30
+        });
+        house.save(function (err, data) {
+          cb(err, data);
+        });
+      },
+      car: function (cb) {
+        var car = new Car({
+          provider: 'Mazda',
+          model: 'CX-5'
+        });
+        car.save(function (err, data) {
+          cb(err, data);
+        });
+      }
+    }, function (err, results) {
+      var person = new Person({
+        login: 'jb@mi6.gov',
+        firstName: 'James',
+        lastName: 'Bond',
+        houses: [
+          results.house._id
+        ],
+        cars: [
+          results.car._id
+        ]
+      });
+      person.save(function (err, data) {
+        Person
+          .findOne({_id: data._id})
+          .lean()
+          .exec(function (err, newPerson) {
+            async.parallel({
+              car: function (cb) {
+                Car.findOne({_id: newPerson.cars[0]}, function (err, car) {
+                  cb(err, car);
+                });
+              },
+              house: function (cb) {
+                House.findOne({_id: newPerson.houses[0]}, function (err, house) {
+                  cb(err, house);
+                });
+              }
+            }, function (err, populated) {
+              newPerson.cars = [populated.car];
+              newPerson.houses = [populated.house];
+
+              assert(newPerson.login === 'jb@mi6.gov', 'Login is incorrect');
+              assert(newPerson.firstName === 'James', 'First Name is incorrect');
+              assert(newPerson.lastName === 'Bond', 'Last Name is incorrect');
+              assert(newPerson.cars.length === 1, 'Cars content is wrong');
+              assert(newPerson.cars[0].model === 'CX-5', 'Car model is incorrect');
+              assert(newPerson.cars[0].provider === 'Mazda', 'Car provider is incorrect');
+              assert(newPerson.houses.length === 1, 'Houses content is wrong');
+              assert(newPerson.houses[0].lat === 30, 'House latitude is incorrect');
+              assert(newPerson.houses[0].lng === 50.3, 'House longitude is incorrect');
+              assert(newPerson.houses[0].description === 'Cool house', 'House description is incorrect');
+
+              done();
+            });
+          });
+      });
+    });
+  });
+
+});

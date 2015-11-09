@@ -1,0 +1,125 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Persons",
+    "contact": {
+      "name": "Vyacheslav Chub",
+      "email": "vyacheslav.chub@gmail.com"
+    },
+    "license": {
+      "name": "The MIT License (MIT)",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "basePath": "/api",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/persons": {
+      "get": {
+        "tags": ["Person Operations"],
+        "summary": "finds persons in the system",
+        "responses": {
+          "200": {
+            "description": "person response",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Person"
+              }
+            },
+            "headers": {
+              "x-expires": {
+                "type": "string"
+              }
+            }
+          },
+          "default": {
+            "description": "unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "House": {
+      "required": [
+        "lng",
+        "lat"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "lng": {
+          "type": "double"
+        },
+        "lat": {
+          "type": "double"
+        }
+      }
+    },
+    "Car": {
+      "required": [
+        "provider",
+        "model"
+      ],
+      "properties": {
+        "provider": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        }
+      }
+    },
+    "Person": {
+      "required": [
+        "login"
+      ],
+      "properties": {
+        "login": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "houses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/House"
+          }
+        },
+        "cars": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Car"
+          }
+        }
+      }
+    },
+    "Error": {
+      "required": [
+        "code",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -215,10 +215,10 @@ describe('swagger-mongoose tests', function () {
     var Person = models.Person;
 
     // next logic is indicate that "_id" and "__v" fields are MongoDB native
-    assert(Person.schema.paths._id.instance === 'ObjectID', '');
-    assert(Person.schema.paths._id.options.type === Schema.Types.ObjectId, '');
-    assert(Person.schema.paths.__v.instance === 'Number', '');
-    assert(Person.schema.paths.__v.options.type === Number, '');
+    assert(Person.schema.paths._id.instance === 'ObjectID', 'Wrong "_id" attributes');
+    assert(Person.schema.paths._id.options.type === Schema.Types.ObjectId, 'Wrong "_id" attributes');
+    assert(Person.schema.paths.__v.instance === 'Number', 'Wrong "__v" attributes');
+    assert(Person.schema.paths.__v.options.type === Number, 'Wrong "__v" attributes');
 
     done();
   });

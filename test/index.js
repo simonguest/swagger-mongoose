@@ -7,6 +7,7 @@ var mongoose = require('mongoose');
 var mockgoose = require('mockgoose');
 mockgoose(mongoose);
 var assert = require('chai').assert;
+var Schema = mongoose.Schema;
 
 describe('swagger-mongoose tests', function () {
 
@@ -121,12 +122,17 @@ describe('swagger-mongoose tests', function () {
 
   it('should create an example person with relations to external collections', function (done) {
     var swagger = fs.readFileSync('./test/person.json');
-    var models = swaggerMongoose.compile(swagger.toString()).models;
+    var mongooseDef = fs.readFileSync('./test/person.mongoose.json');
+
+    var models = swaggerMongoose.compile(swagger.toString(), mongooseDef.toString()).models;
+
     var Person = models.Person;
     var House = models.House;
     var Car = models.Car;
 
+    assert(Person.schema.paths.cars.options.type[0].type === Schema.Types.ObjectId, 'Wrong "car" type');
     assert(Person.schema.paths.cars.options.type[0].ref === undefined, 'Ref to "car" should be undefined');
+    assert(Person.schema.paths.houses.options.type[0].type === Schema.Types.ObjectId, 'Wrong "house" type');
     assert(Person.schema.paths.houses.options.type[0].ref === 'House', 'Ref to "house" should be "House"');
 
     async.parallel({

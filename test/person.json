@@ -95,20 +95,13 @@
         "houses": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/House",
-            "_mongodb": {
-              "mongodbType": "objectId"
-            }
+            "$ref": "#/definitions/House"
           }
         },
         "cars": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Car",
-            "_mongodb": {
-              "mongodbType": "objectId",
-              "includeSwaggerRef": false
-            }
+            "$ref": "#/definitions/Car"
           }
         }
       }

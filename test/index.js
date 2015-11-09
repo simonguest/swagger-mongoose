@@ -208,4 +208,19 @@ describe('swagger-mongoose tests', function () {
     });
   });
 
+  it('should avoid reserved mongodb fields', function (done) {
+    var swagger = fs.readFileSync('./test/person.json');
+    var models = swaggerMongoose.compile(swagger.toString()).models;
+
+    var Person = models.Person;
+
+    // next logic is indicate that "_id" and "__v" fields are MongoDB native
+    assert(Person.schema.paths._id.instance === 'ObjectID', '');
+    assert(Person.schema.paths._id.options.type === Schema.Types.ObjectId, '');
+    assert(Person.schema.paths.__v.instance === 'Number', '');
+    assert(Person.schema.paths.__v.options.type === Number, '');
+
+    done();
+  });
+
 });

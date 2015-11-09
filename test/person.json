@@ -83,6 +83,9 @@
         "login"
       ],
       "properties": {
+        "_id": {
+          "type": "string"
+        },
         "login": {
           "type": "string"
         },

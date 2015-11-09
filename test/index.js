@@ -20,6 +20,9 @@ describe('swagger-mongoose tests', function () {
     delete mongoose.models.Pet;
     delete mongoose.models.Address;
     delete mongoose.models.Error;
+    delete mongoose.models.Person;
+    delete mongoose.models.House;
+    delete mongoose.models.Car;
   });
 
   it('should create an example pet and return all valid properties', function (done) {
@@ -203,6 +206,21 @@ describe('swagger-mongoose tests', function () {
           });
       });
     });
+  });
+
+  it('should avoid reserved mongodb fields', function (done) {
+    var swagger = fs.readFileSync('./test/person.json');
+    var models = swaggerMongoose.compile(swagger.toString()).models;
+
+    var Person = models.Person;
+
+    // next logic is indicate that "_id" and "__v" fields are MongoDB native
+    assert(Person.schema.paths._id.instance === 'ObjectID', 'Wrong "_id" attributes');
+    assert(Person.schema.paths._id.options.type === Schema.Types.ObjectId, 'Wrong "_id" attributes');
+    assert(Person.schema.paths.__v.instance === 'Number', 'Wrong "__v" attributes');
+    assert(Person.schema.paths.__v.options.type === Number, 'Wrong "__v" attributes');
+
+    done();
   });
 
 });

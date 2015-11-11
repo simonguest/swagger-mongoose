@@ -23,6 +23,7 @@ describe('swagger-mongoose tests', function () {
     delete mongoose.models.Person;
     delete mongoose.models.House;
     delete mongoose.models.Car;
+    delete mongoose.models.Human;
   });
 
   it('should create an example pet and return all valid properties', function (done) {
@@ -219,6 +220,21 @@ describe('swagger-mongoose tests', function () {
     assert(Person.schema.paths._id.options.type === Schema.Types.ObjectId, 'Wrong "_id" attributes');
     assert(Person.schema.paths.__v.instance === 'Number', 'Wrong "__v" attributes');
     assert(Person.schema.paths.__v.options.type === Number, 'Wrong "__v" attributes');
+
+    done();
+  });
+
+  it('should process circular references', function (done) {
+    var swagger = fs.readFileSync('./test/person.json');
+    var models = swaggerMongoose.compile(swagger.toString()).models;
+
+    var Human = models.Human;
+
+    // next logic is indicate that circular references are processed
+    assert(Human.schema.paths.father.instance === 'ObjectID', 'Wrong "father" attribute: instance');
+    assert(Human.schema.paths.father.options.type === Schema.Types.ObjectId, 'Wrong "father" attribute: type');
+    assert(Human.schema.paths.mother.instance === 'ObjectID', 'Wrong "mother" attribute: instance');
+    assert(Human.schema.paths.mother.options.type === Schema.Types.ObjectId, 'Wrong "mother" attribute: type');
 
     done();
   });

@@ -109,6 +109,22 @@
         }
       }
     },
+    "Human": {
+      "properties": {
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "father": {
+          "$ref": "#/definitions/Human"
+        },
+        "mother": {
+          "$ref": "#/definitions/Human"
+        }
+      }
+    },
     "Error": {
       "required": [
         "code",

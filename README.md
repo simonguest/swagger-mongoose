@@ -33,7 +33,7 @@ swagger-mongoose does not yet perform/create any validation from the swagger def
 
 ## License
 
-Copyright 2015 Simon Guest 
+Copyright 2015 Simon Guest
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

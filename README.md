@@ -19,6 +19,30 @@ var myPet = new Pet({
 myPet.save();
 ```
 
+```js
+var swaggerMongoose = require('swagger-mongoose');
+
+var swagger = fs.readFileSync('./petstore.json');
+var Pet = swaggerMongoose.compile(swagger, { default: { timestamps: true } }).models.Pet;
+var myPet = new Pet({
+    id: 123,
+    name: 'Fluffy'
+    });
+myPet.save();
+```
+
+```js
+var swaggerMongoose = require('swagger-mongoose');
+
+var swagger = fs.readFileSync('./petstore.json');
+var Pet = swaggerMongoose.compile(swagger, { default: { timestamps: true }, MySchema: { timestamps: false } }).models.Pet;
+var myPet = new Pet({
+    id: 123,
+    name: 'Fluffy'
+    });
+myPet.save();
+```
+
 ## Installation
 
 ```js
@@ -27,7 +51,7 @@ npm install swagger-mongoose
 
 ## Limitations
 
-swagger-mongoose supports the following attributes: integer, long, float, double, string, password, boolean, date, dateTime, array (including nested schemas). swagger-mongoose also supports relationships between objects in a swagger document (thanks to @buchslava)
+swagger-mongoose supports the following attributes: integer, long, float, double, string, password, boolean, date, dateTime, object, array (including nested schemas). swagger-mongoose also supports relationships between objects in a swagger document (thanks to @buchslava)
 
 swagger-mongoose does not yet perform/create any validation from the swagger definitions (see issues if you'd like to help)
 

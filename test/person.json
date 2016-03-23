@@ -106,6 +106,17 @@
           "items": {
             "$ref": "#/definitions/Car"
           }
+        },
+        "phone": {
+          "type": "object",
+          "properties": {
+            "home": {
+              "type": "string"
+            },
+            "mobile": {
+              "type": "string"
+            }
+          }
         }
       }
     },

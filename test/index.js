@@ -128,7 +128,7 @@ describe('swagger-mongoose tests', function () {
     var swagger = fs.readFileSync('./test/person.json');
     var mongooseDef = fs.readFileSync('./test/person.mongoose.json');
 
-    var models = swaggerMongoose.compile(swagger.toString(), mongooseDef.toString()).models;
+    var models = swaggerMongoose.compile(swagger.toString(), null, mongooseDef.toString()).models;
 
     var Person = models.Person;
     var House = models.House;
@@ -169,7 +169,11 @@ describe('swagger-mongoose tests', function () {
         ],
         cars: [
           results.car._id
-        ]
+        ],
+        phone: {
+          home: "(123) 456-7890",
+          mobile: "(012) 345-6789"
+        }
       });
       person.save(function (err, data) {
         Person
@@ -201,10 +205,46 @@ describe('swagger-mongoose tests', function () {
               assert(newPerson.houses[0].lat === 30, 'House latitude is incorrect');
               assert(newPerson.houses[0].lng === 50.3, 'House longitude is incorrect');
               assert(newPerson.houses[0].description === 'Cool house', 'House description is incorrect');
+              assert(newPerson.phone.home === '(123) 456-7890', 'Home phone number is incorrect');
+              assert(newPerson.phone.mobile === '(012) 345-6789', 'Mobile phone number is incorrect');
 
               done();
             });
           });
+      });
+    });
+  });
+
+  it('should create an example pet from a JSON object with default schema options', function (done) {
+    var swagger = fs.readFileSync('./test/petstore.json');
+    var Pet = swaggerMongoose.compile(JSON.parse(swagger), { default: { timestamps: true }}).models.Pet;
+    var myPet = new Pet({
+      id: 123,
+      name: 'Fluffy'
+    });
+    myPet.save(function (err) {
+      if (err) throw err;
+      Pet.findOne({id: 123}, function (err, data) {
+        assert(data.schema.paths.createdAt, 'createdAt timestamp not found in data');
+        assert(data.schema.paths.updatedAt, 'updatedAt timestamp not found in data');
+        done();
+      });
+    });
+  });
+
+  it('should create an example pet from a JSON object with schema specific options overriding default options', function (done) {
+    var swagger = fs.readFileSync('./test/petstore.json');
+    var Pet = swaggerMongoose.compile(JSON.parse(swagger), { default: { timestamps: true }, Pet: { timestamps: false }}).models.Pet;
+    var myPet = new Pet({
+      id: 123,
+      name: 'Fluffy'
+    });
+    myPet.save(function (err) {
+      if (err) throw err;
+      Pet.findOne({id: 123}, function (err, data) {
+        assert(!data.schema.paths.createdAt, 'createdAt timestamp found in data');
+        assert(!data.schema.paths.updatedAt, 'updatedAt timestamp found in data');
+        done();
       });
     });
   });

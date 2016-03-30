@@ -19,28 +19,63 @@ var myPet = new Pet({
 myPet.save();
 ```
 
-```js
-var swaggerMongoose = require('swagger-mongoose');
+There are 3 different use cases and 3 new custom options available for the new ```x-swagger-mongoose``` custom property for Swagger documents that are v2 and greater.
 
-var swagger = fs.readFileSync('./petstore.json');
-var Pet = swaggerMongoose.compile(swagger, { default: { timestamps: true } }).models.Pet;
-var myPet = new Pet({
-    id: 123,
-    name: 'Fluffy'
-    });
-myPet.save();
+Custom options include: ```schema-options```, ```additional-properties```, and ```exclude-schema```
+
+By default the ```exclude-schema``` option is set to false.
+
+Global Schema Options
+```js
+x-swagger-mongoose:
+  schema-options:
+    timestamps: true
+definitions:
+  User: ...
 ```
 
+Per-Schema Options
 ```js
-var swaggerMongoose = require('swagger-mongoose');
+  User:
+    type: object
+    x-swagger-mongoose:
+      schema-options:
+          timestamps: true
+```
 
-var swagger = fs.readFileSync('./petstore.json');
-var Pet = swaggerMongoose.compile(swagger, { default: { timestamps: true }, MySchema: { timestamps: false } }).models.Pet;
-var myPet = new Pet({
-    id: 123,
-    name: 'Fluffy'
-    });
-myPet.save();
+Swagger Validation requires String but Schema defined as a reference
+```js
+  User:
+    type: object
+    properties:
+      otherSchema:
+        type: string
+        x-swagger-mongoose:
+          $ref: "#/definitions/OtherSchema"
+```
+
+Additional Mongo Schema paths that are not shown in Swagger-UI Documentation
+```js
+  SchemaName:
+    type: object
+    x-swagger-mongoose:
+      additional-properties:
+        user:
+          $ref: "#/definitions/User"
+        approved:
+          type: string
+          format: datetime
+        rejected:
+          type: string
+          format: datetime
+```
+
+No Mongo Schema created for this definition
+```js
+  ExcludedSchema:
+    type: object
+    x-swagger-mongoose:
+      exclude-schema: true
 ```
 
 ## Installation

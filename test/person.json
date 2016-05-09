@@ -1,155 +1,164 @@
 {
-  "swagger": "2.0",
-  "info": {
-    "version": "1.0.0",
-    "title": "Persons",
-    "contact": {
-      "name": "Vyacheslav Chub",
-      "email": "vyacheslav.chub@gmail.com"
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Persons",
+        "contact": {
+            "name": "Vyacheslav Chub",
+            "email": "vyacheslav.chub@gmail.com"
+        },
+        "license": {
+            "name": "The MIT License (MIT)",
+            "url": "https://opensource.org/licenses/MIT"
+        }
     },
-    "license": {
-      "name": "The MIT License (MIT)",
-      "url": "https://opensource.org/licenses/MIT"
-    }
-  },
-  "basePath": "/api",
-  "schemes": [
-    "http"
-  ],
-  "paths": {
-    "/persons": {
-      "get": {
-        "tags": ["Person Operations"],
-        "summary": "finds persons in the system",
-        "responses": {
-          "200": {
-            "description": "person response",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Person"
-              }
-            },
-            "headers": {
-              "x-expires": {
-                "type": "string"
-              }
+    "basePath": "/api",
+    "schemes": [
+        "http"
+    ],
+    "paths": {
+        "/persons": {
+            "get": {
+                "tags": [
+                    "Person Operations"
+                ],
+                "summary": "finds persons in the system",
+                "responses": {
+                    "200": {
+                        "description": "person response",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Person"
+                            }
+                        },
+                        "headers": {
+                            "x-expires": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
             }
-          },
-          "default": {
-            "description": "unexpected error",
-            "schema": {
-              "$ref": "#/definitions/Error"
+        }
+    },
+    "definitions": {
+        "House": {
+            "required": [
+                "lng",
+                "lat"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "lng": {
+                    "type": "double"
+                },
+                "lat": {
+                    "type": "double"
+                }
             }
-          }
-        }
-      }
-    }
-  },
-  "definitions": {
-    "House": {
-      "required": [
-        "lng",
-        "lat"
-      ],
-      "properties": {
-        "description": {
-          "type": "string"
         },
-        "lng": {
-          "type": "double"
-        },
-        "lat": {
-          "type": "double"
-        }
-      }
-    },
-    "Car": {
-      "required": [
-        "provider",
-        "model"
-      ],
-      "properties": {
-        "provider": {
-          "type": "string"
-        },
-        "model": {
-          "type": "string"
-        }
-      }
-    },
-    "Person": {
-      "required": [
-        "login"
-      ],
-      "properties": {
-        "_id": {
-          "type": "string"
-        },
-        "login": {
-          "type": "string"
-        },
-        "firstName": {
-          "type": "string"
-        },
-        "lastName": {
-          "type": "string"
-        },
-        "houses": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/House"
-          }
-        },
-        "cars": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Car"
-          }
-        },
-        "phone": {
-          "type": "object",
-          "properties": {
-            "home": {
-              "type": "string"
-            },
-            "mobile": {
-              "type": "string"
+        "Car": {
+            "required": [
+                "provider",
+                "model"
+            ],
+            "properties": {
+                "provider": {
+                    "type": "string"
+                },
+                "model": {
+                    "type": "string"
+                }
             }
-          }
+        },
+        "Person": {
+            "required": [
+                "login"
+            ],
+            "properties": {
+                "_id": {
+                    "type": "string"
+                },
+                "login": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "houses": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "x-swagger-mongoose": {
+                            "$ref": "#/definitions/House"
+                        }
+                    }
+                },
+                "cars": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "x-swagger-mongoose": {
+                            "$ref": "#/definitions/Car",
+                            "exclude-schema": true
+                        }
+                    }
+                },
+                "phone": {
+                    "type": "object",
+                    "properties": {
+                        "home": {
+                            "type": "string"
+                        },
+                        "mobile": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "Human": {
+            "properties": {
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "father": {
+                    "$ref": "#/definitions/Human"
+                },
+                "mother": {
+                    "$ref": "#/definitions/Human"
+                }
+            }
+        },
+        "Error": {
+            "required": [
+                "code",
+                "message"
+            ],
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
         }
-      }
-    },
-    "Human": {
-      "properties": {
-        "firstName": {
-          "type": "string"
-        },
-        "lastName": {
-          "type": "string"
-        },
-        "father": {
-          "$ref": "#/definitions/Human"
-        },
-        "mother": {
-          "$ref": "#/definitions/Human"
-        }
-      }
-    },
-    "Error": {
-      "required": [
-        "code",
-        "message"
-      ],
-      "properties": {
-        "code": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "type": "string"
-        }
-      }
     }
-  }
 }

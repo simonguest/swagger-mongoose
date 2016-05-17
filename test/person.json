@@ -112,7 +112,6 @@
                         "type": "string",
                         "x-swagger-mongoose": {
                             "$ref": "#/definitions/Car",
-                            "exclude-schema": true
                         }
                     }
                 },

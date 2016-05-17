@@ -89,7 +89,12 @@
                     "type": "string"
                 },
                 "login": {
-                    "type": "string"
+                    "type": "string",
+                    "x-swagger-mongoose": {
+                      "index": {
+                        "unique":"true"
+                      }
+                    }
                 },
                 "firstName": {
                     "type": "string"
@@ -111,7 +116,7 @@
                     "items": {
                         "type": "string",
                         "x-swagger-mongoose": {
-                            "$ref": "#/definitions/Car",
+                            "$ref": "#/definitions/Car"
                         }
                     }
                 },

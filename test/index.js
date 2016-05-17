@@ -213,6 +213,43 @@ describe('swagger-mongoose tests', function () {
     });
   });
 
+  it('should identify and throw errors on duplicate properties marked unique', function (done) {
+      var swagger = fs.readFileSync('./test/person.json');
+      var models = swaggerMongoose.compile(swagger.toString()).models;
+      var Person = models.Person;
+
+      var person = new Person({
+        login: 'jb@mi6.gov',
+        firstName: 'James',
+        lastName: 'Bond',
+        phone: {
+          home: "(123) 456-7890",
+          mobile: "(012) 345-6789"
+        }
+      });
+      person.save(function(err,data){
+        var copyCat = new Person({
+          login: 'jb@mi6.gov',
+          firstName: 'Jake',
+          lastName: 'Barrington',
+        });
+        copyCat.save(function(err,data){
+          if(err){
+            assert.equal(err.name, 'MongoError');
+            assert.include(err.errmsg, 'duplicate key')
+            assert.include(err.errmsg, 'login')
+            done();
+          } else {
+            asset.fail('unique index should have prevented this')
+            done();
+          }
+        })
+
+      })
+
+
+    });
+
   it('should create an example pet from a JSON object with default schema options', function (done) {
     var swagger = fs.readFileSync('./test/petstore.json');
 

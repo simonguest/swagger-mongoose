@@ -121,8 +121,15 @@ x-swagger-mongoose:
 ```
 validators is a path to the validators/index.js folder/file.
 
+each validator is an object, that contains two properties:
+* message: this is the text displayed in the mongoose error when it returns false
+* validator: this is the function that takes one argument (I believe) and returns true or false.
+
+the properties must have these names, and must be exported in the index. unless you're aware of how to require an entire folder, in which case pull requests are welcome.
+
 example validator:
 ```js
+//  /lib/validators/index.js
 module.exports.homePhone = {
   message: '{VALUE} is not a valid home phone number!',
   validator: function(v){
@@ -131,7 +138,7 @@ module.exports.homePhone = {
 }
 ```
 
-at the property that you want to attach a validator for:
+at the property that you want to attach a validator for, add the validator property and the name of the function.
 ```js
 phone:
   type: object

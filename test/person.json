@@ -50,6 +50,12 @@
     },
     "definitions": {
         "House": {
+            "x-swagger-mongoose":{
+              "index":{
+                "lng":1,
+                "lat":1
+              }
+            },
             "required": [
                 "lng",
                 "lat"

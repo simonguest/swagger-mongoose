@@ -213,6 +213,20 @@ describe('swagger-mongoose tests', function () {
     });
   });
 
+  it('should identify return indicies from the swagger document', function (done) {
+      var swagger = fs.readFileSync('./test/person.json');
+      var models = swaggerMongoose.compile(swagger.toString()).models;
+      var Human = models.Human;
+      var Person = models.Person;
+      var House = models.House;
+      assert.propertyVal(Person.schema.paths.login._index, 'unique', 'true', 'Person.login should have a unique index')
+      assert.sameDeepMembers(Human.schema._indexes[0], [ { firstName: 1, lastName: 1 },{ unique: true, background: true } ], 'Human document should have an object of firstName/lastName, and a unique:true object');
+      assert.sameDeepMembers(House.schema._indexes[0], [ { lng: 1, lat: 1 }, { background: true } ], 'House document should have an object of lng/lat, but not a unique key');
+
+      done();
+
+    });
+
   it('should identify and throw errors on duplicate properties marked unique', function (done) {
       var swagger = fs.readFileSync('./test/person.json');
       var models = swaggerMongoose.compile(swagger.toString()).models;

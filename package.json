@@ -1,5 +1,5 @@
 {
-  "name": "swagger-mongoose",
+  "name": "swagger-mongoose-fork",
   "version": "1.0.0",
   "description": "Generate mongoose schemas and models from swagger documents",
   "main": "./lib/index.js",

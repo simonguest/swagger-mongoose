@@ -244,9 +244,35 @@ describe('swagger-mongoose tests', function () {
             done();
           }
         })
-
       })
+    });
 
+  it('should identify and throw errors on compound indices marked unique', function (done) {
+      var swagger = fs.readFileSync('./test/person.json');
+      var models = swaggerMongoose.compile(swagger.toString()).models;
+      var Human = models.Human;
+      var human = new Human({
+        firstName: 'James',
+        lastName: 'Bond'
+      })
+      human.save(function(err,data){
+        var copyCat = new Human({
+          firstName: 'James',
+          lastName: 'Bond'
+        })
+        copyCat.save(function(err,data){
+          if (err) {
+            assert.equal(err.name, 'MongoError');
+            assert.include(err.errmsg, 'duplicate key')
+            assert.include(err.errmsg, 'firstName')
+            assert.include(err.errmsg, 'lastName')
+            done();
+          } else {
+            assert.ok(data);
+            done();
+          }
+        })
+      })
 
     });
 

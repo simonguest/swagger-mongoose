@@ -134,6 +134,13 @@
             }
         },
         "Human": {
+            "x-swagger-mongoose":{
+              "index":{
+                "firstName":1,
+                "lastName":1,
+                "unique":"true"
+              }
+            },
             "properties": {
                 "firstName": {
                     "type": "string"

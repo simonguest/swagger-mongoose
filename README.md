@@ -42,6 +42,41 @@ Per-Schema Options
       schema-options:
           timestamps: true
 ```
+Unique Index at the property level
+```js
+  Person:
+    required:
+      - login
+    properties:
+      _id:
+        type: string
+      login:
+        type: string
+        x-swagger-mongoose:
+          index:
+            unique: 'true'
+```
+
+Compound Indexes at the document level
+```js
+definitions:
+  House:
+    x-swagger-mongoose:
+      index:
+        lng: 1
+        lat: 1
+```
+
+Unique Compound Indexes at the document level
+```js
+  User:
+    type: object
+    x-swagger-mongoose:
+      index:
+        firstName: 1
+        lastName: 1
+        unique: true
+```
 
 Swagger Validation requires String but Schema defined as a reference
 ```js
@@ -76,6 +111,37 @@ No Mongo Schema created for this definition
     type: object
     x-swagger-mongoose:
       exclude-schema: true
+```
+## Custom validators
+
+This is a bit of a work around, but in the top-level of your swagger doc:
+```js
+x-swagger-mongoose:
+  validators: ./validators
+```
+validators is a path to the validators/index.js folder/file.
+
+example validator:
+```js
+module.exports.homePhone = {
+  message: '{VALUE} is not a valid home phone number!',
+  validator: function(v){
+    return /([0-9]{1}[-\.\s])?([\(\[]?[0-9]{3}[\)\]]?[-\.\s])?([0-9]{3})[-\.\s]([0-9]{4})(?:\s?(?:x|ext)\s?([0-9])+)?/.test(v)
+  }
+}
+```
+
+at the property that you want to attach a validator for:
+```js
+phone:
+  type: object
+  properties:
+    home:
+      type: string
+      x-swagger-mongoose:
+        validator: homePhone
+    mobile:
+      type: string
 ```
 
 ## Installation

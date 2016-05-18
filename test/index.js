@@ -328,7 +328,7 @@ describe('swagger-mongoose tests', function () {
       })
     });
 
-  it('should identify and add enum to strings', function (done) {
+  it('should identify and add enum to schema', function (done) {
       var swagger = fs.readFileSync('./test/person.json');
       var models = swaggerMongoose.compile(swagger.toString()).models;
       var Car = models.Car;

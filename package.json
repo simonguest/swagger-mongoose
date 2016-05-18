@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/simonguest/swagger-mongoose"
+    "url": "https://github.com/paul42/swagger-mongoose"
   },
   "keywords": [
     "swagger",
@@ -30,10 +30,10 @@
     "mongo",
     "schema"
   ],
-  "author": "Simon Guest <me@simonguest.com> (http://github.com/simonguest)",
+  "author": "Paul.42 <paul.42@gmail.com> (http://github.com/paul42)",
   "license": "Apache 2",
   "bugs": {
-    "url": "https://github.com/simonguest/swagger-mongoose/issues"
+    "url": "https://github.com/paul42/swagger-mongoose/issues"
   },
-  "homepage": "https://github.com/simonguest/swagger-mongoose"
+  "homepage": "https://github.com/paul42/swagger-mongoose"
 }

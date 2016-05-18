@@ -134,6 +134,7 @@ describe('swagger-mongoose tests', function () {
     });
   });
 
+
   it('should create an example person with relations to external collections', function (done) {
     var swagger = fs.readFileSync('./test/person.json');
 
@@ -286,7 +287,6 @@ describe('swagger-mongoose tests', function () {
         })
         copyCat.save(function(err,data){
           if (err) {
-            console.log(err);
             assert.equal(err.name, 'MongoError');
             assert.include(err.errmsg, 'duplicate key')
             assert.include(err.errmsg, '{ : "James", : "Bond" }')
@@ -323,6 +323,29 @@ describe('swagger-mongoose tests', function () {
           done();
         } else {
           assert.fail('phone validator should have prevented this')
+          done();
+        }
+      })
+    });
+
+  it('should identify and add enum to strings', function (done) {
+      var swagger = fs.readFileSync('./test/person.json');
+      var models = swaggerMongoose.compile(swagger.toString()).models;
+      var Car = models.Car;
+
+      var car = new Car({
+        provider: 'Soviet Motors',
+        model: 'Gremlin'
+      });
+
+      car.save(function(err,data){
+        if(err){
+          var expectedErrorMessage = _.get(err, 'errors.provider.message');
+          assert.equal(err.name, 'ValidationError');
+          assert.include(expectedErrorMessage, 'is not a valid enum value')
+          done();
+        } else {
+          assert.fail('enum for car should have prevented this')
           done();
         }
       })

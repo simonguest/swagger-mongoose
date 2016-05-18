@@ -82,7 +82,13 @@
             ],
             "properties": {
                 "provider": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Mercedes",
+                        "Jaguar",
+                        "Aston Martin",
+                        "Mazda"
+                    ]
                 },
                 "model": {
                     "type": "string"

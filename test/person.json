@@ -16,6 +16,9 @@
     "schemes": [
         "http"
     ],
+    "x-swagger-mongoose": {
+        "validators": "./validators"
+    },
     "paths": {
         "/persons": {
             "get": {
@@ -50,11 +53,11 @@
     },
     "definitions": {
         "House": {
-            "x-swagger-mongoose":{
-              "index":{
-                "lng":1,
-                "lat":1
-              }
+            "x-swagger-mongoose": {
+                "index": {
+                    "lng": 1,
+                    "lat": 1
+                }
             },
             "required": [
                 "lng",
@@ -97,9 +100,9 @@
                 "login": {
                     "type": "string",
                     "x-swagger-mongoose": {
-                      "index": {
-                        "unique":"true"
-                      }
+                        "index": {
+                            "unique": "true"
+                        }
                     }
                 },
                 "firstName": {
@@ -130,7 +133,10 @@
                     "type": "object",
                     "properties": {
                         "home": {
-                            "type": "string"
+                            "type": "string",
+                            "x-swagger-mongoose": {
+                                "validator": "homePhone"
+                            }
                         },
                         "mobile": {
                             "type": "string"
@@ -140,12 +146,12 @@
             }
         },
         "Human": {
-            "x-swagger-mongoose":{
-              "index":{
-                "firstName":1,
-                "lastName":1,
-                "unique":"true"
-              }
+            "x-swagger-mongoose": {
+                "index": {
+                    "firstName": 1,
+                    "lastName": 1,
+                    "unique": "true"
+                }
             },
             "properties": {
                 "firstName": {

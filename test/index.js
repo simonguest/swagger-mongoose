@@ -5,18 +5,24 @@ var fs = require('fs');
 var async = require('async');
 var mongoose = require('mongoose');
 var mockgoose = require('mockgoose');
-mockgoose(mongoose);
+// mockgoose(mongoose);
 var assert = require('chai').assert;
 var Schema = mongoose.Schema;
+var _ = require('lodash');
 
 describe('swagger-mongoose tests', function () {
 
-  before(function () {
-    mongoose.connect('mongodb://localhost/schema-test');
-  });
+  before(function(done) {
+ 		mockgoose(mongoose).then(function() {
+         	mongoose.connect('mongodb://127.0.0.1:27017/TestingDB', function(err) {
+         	    done(err);
+         	});
+ 		     });
+     });
 
-  afterEach(function () {
-    mongoose.disconnect();
+
+  afterEach(function (done) {
+
     delete mongoose.models.Pet;
     delete mongoose.models.Address;
     delete mongoose.models.Error;
@@ -24,6 +30,10 @@ describe('swagger-mongoose tests', function () {
     delete mongoose.models.House;
     delete mongoose.models.Car;
     delete mongoose.models.Human;
+    mockgoose.reset(function(){
+      done()
+    });
+
   });
 
   it('should create an example pet and return all valid properties', function (done) {
@@ -251,10 +261,10 @@ describe('swagger-mongoose tests', function () {
           if(err){
             assert.equal(err.name, 'MongoError');
             assert.include(err.errmsg, 'duplicate key')
-            assert.include(err.errmsg, 'login')
+            assert.include(err.errmsg, 'jb@mi6.gov')
             done();
           } else {
-            asset.fail('unique index should have prevented this')
+            assert.fail('unique index should have prevented this')
             done();
           }
         })
@@ -276,10 +286,10 @@ describe('swagger-mongoose tests', function () {
         })
         copyCat.save(function(err,data){
           if (err) {
+            console.log(err);
             assert.equal(err.name, 'MongoError');
             assert.include(err.errmsg, 'duplicate key')
-            assert.include(err.errmsg, 'firstName')
-            assert.include(err.errmsg, 'lastName')
+            assert.include(err.errmsg, '{ : "James", : "Bond" }')
             done();
           } else {
             assert.ok(data);
@@ -288,6 +298,34 @@ describe('swagger-mongoose tests', function () {
         })
       })
 
+    });
+
+  it('should allow for external validators', function (done) {
+      var swagger = fs.readFileSync('./test/person.json');
+      var models = swaggerMongoose.compile(swagger.toString()).models;
+      var Person = models.Person;
+
+      var person = new Person({
+        login: 'jb@mi6.gov',
+        firstName: 'James',
+        lastName: 'Bond',
+        phone: {
+          home: "(123) 456-789",
+          mobile: "(012) 345-6789"
+        }
+      });
+
+      person.save(function(err,data){
+        if(err){
+          var expectedErrorMessage = _.get(err, 'errors[\'phone.home\'].message');
+          assert.equal(err.name, 'ValidationError');
+          assert.include(expectedErrorMessage, 'is not a valid home phone number!')
+          done();
+        } else {
+          assert.fail('phone validator should have prevented this')
+          done();
+        }
+      })
     });
 
   it('should create an example pet from a JSON object with default schema options', function (done) {

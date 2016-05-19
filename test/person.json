@@ -17,7 +17,8 @@
         "http"
     ],
     "x-swagger-mongoose": {
-        "validators": "./validators"
+        "validators": "./lib/validators",
+        "description":"The relative path to validators library from process.cwd()"
     },
     "paths": {
         "/persons": {

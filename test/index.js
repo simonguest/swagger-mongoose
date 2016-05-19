@@ -134,7 +134,6 @@ describe('swagger-mongoose tests', function () {
     });
   });
 
-
   it('should create an example person with relations to external collections', function (done) {
     var swagger = fs.readFileSync('./test/person.json');
 

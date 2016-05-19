@@ -117,9 +117,9 @@ No Mongo Schema created for this definition
 This is a bit of a work around, but in the top-level of your swagger doc:
 ```js
 x-swagger-mongoose:
-  validators: ./validators
+  validators: ./lib/validators
 ```
-validators is a path to the validators/index.js folder/file.
+validators is a relative path to the validators/index.js folder/file, FROM process.cwd().
 
 each validator is an object, that contains two properties:
 * message: this is the text displayed in the mongoose error when it returns false

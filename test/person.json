@@ -1,144 +1,194 @@
 {
-  "swagger": "2.0",
-  "info": {
-    "version": "1.0.0",
-    "title": "Persons",
-    "contact": {
-      "name": "Vyacheslav Chub",
-      "email": "vyacheslav.chub@gmail.com"
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Persons",
+        "contact": {
+            "name": "Vyacheslav Chub",
+            "email": "vyacheslav.chub@gmail.com"
+        },
+        "license": {
+            "name": "The MIT License (MIT)",
+            "url": "https://opensource.org/licenses/MIT"
+        }
     },
-    "license": {
-      "name": "The MIT License (MIT)",
-      "url": "https://opensource.org/licenses/MIT"
-    }
-  },
-  "basePath": "/api",
-  "schemes": [
-    "http"
-  ],
-  "paths": {
-    "/persons": {
-      "get": {
-        "tags": ["Person Operations"],
-        "summary": "finds persons in the system",
-        "responses": {
-          "200": {
-            "description": "person response",
-            "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Person"
-              }
+    "basePath": "/api",
+    "schemes": [
+        "http"
+    ],
+    "x-swagger-mongoose": {
+        "validators": "./lib/validators",
+        "description":"The relative path to validators library from process.cwd()"
+    },
+    "paths": {
+        "/persons": {
+            "get": {
+                "tags": [
+                    "Person Operations"
+                ],
+                "summary": "finds persons in the system",
+                "responses": {
+                    "200": {
+                        "description": "person response",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Person"
+                            }
+                        },
+                        "headers": {
+                            "x-expires": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/Error"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "House": {
+            "x-swagger-mongoose": {
+                "index": {
+                    "lng": 1,
+                    "lat": 1
+                }
             },
-            "headers": {
-              "x-expires": {
-                "type": "string"
-              }
+            "required": [
+                "lng",
+                "lat"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "lng": {
+                    "type": "double"
+                },
+                "lat": {
+                    "type": "double"
+                }
             }
-          },
-          "default": {
-            "description": "unexpected error",
-            "schema": {
-              "$ref": "#/definitions/Error"
+        },
+        "Car": {
+            "required": [
+                "provider",
+                "model"
+            ],
+            "properties": {
+                "provider": {
+                    "type": "string",
+                    "enum": [
+                        "Mercedes",
+                        "Jaguar",
+                        "Aston Martin",
+                        "Mazda"
+                    ]
+                },
+                "model": {
+                    "type": "string"
+                }
             }
-          }
+        },
+        "Person": {
+            "required": [
+                "login"
+            ],
+            "properties": {
+                "_id": {
+                    "type": "string"
+                },
+                "login": {
+                    "type": "string",
+                    "x-swagger-mongoose": {
+                        "index": {
+                            "unique": "true"
+                        }
+                    }
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "houses": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "x-swagger-mongoose": {
+                            "$ref": "#/definitions/House"
+                        }
+                    }
+                },
+                "cars": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "x-swagger-mongoose": {
+                            "$ref": "#/definitions/Car"
+                        }
+                    }
+                },
+                "phone": {
+                    "type": "object",
+                    "properties": {
+                        "home": {
+                            "type": "string",
+                            "x-swagger-mongoose": {
+                                "validator": "homePhone"
+                            }
+                        },
+                        "mobile": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "Human": {
+            "x-swagger-mongoose": {
+                "index": {
+                    "firstName": 1,
+                    "lastName": 1,
+                    "unique": "true"
+                }
+            },
+            "properties": {
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "father": {
+                    "$ref": "#/definitions/Human"
+                },
+                "mother": {
+                    "$ref": "#/definitions/Human"
+                }
+            }
+        },
+        "Error": {
+            "required": [
+                "code",
+                "message"
+            ],
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
         }
-      }
     }
-  },
-  "definitions": {
-    "House": {
-      "required": [
-        "lng",
-        "lat"
-      ],
-      "properties": {
-        "description": {
-          "type": "string"
-        },
-        "lng": {
-          "type": "double"
-        },
-        "lat": {
-          "type": "double"
-        }
-      }
-    },
-    "Car": {
-      "required": [
-        "provider",
-        "model"
-      ],
-      "properties": {
-        "provider": {
-          "type": "string"
-        },
-        "model": {
-          "type": "string"
-        }
-      }
-    },
-    "Person": {
-      "required": [
-        "login"
-      ],
-      "properties": {
-        "_id": {
-          "type": "string"
-        },
-        "login": {
-          "type": "string"
-        },
-        "firstName": {
-          "type": "string"
-        },
-        "lastName": {
-          "type": "string"
-        },
-        "houses": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/House"
-          }
-        },
-        "cars": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Car"
-          }
-        }
-      }
-    },
-    "Human": {
-      "properties": {
-        "firstName": {
-          "type": "string"
-        },
-        "lastName": {
-          "type": "string"
-        },
-        "father": {
-          "$ref": "#/definitions/Human"
-        },
-        "mother": {
-          "$ref": "#/definitions/Human"
-        }
-      }
-    },
-    "Error": {
-      "required": [
-        "code",
-        "message"
-      ],
-      "properties": {
-        "code": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "type": "string"
-        }
-      }
-    }
-  }
 }

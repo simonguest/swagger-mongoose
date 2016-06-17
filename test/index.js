@@ -5,18 +5,24 @@ var fs = require('fs');
 var async = require('async');
 var mongoose = require('mongoose');
 var mockgoose = require('mockgoose');
-mockgoose(mongoose);
+// mockgoose(mongoose);
 var assert = require('chai').assert;
 var Schema = mongoose.Schema;
+var _ = require('lodash');
 
 describe('swagger-mongoose tests', function () {
 
-  before(function () {
-    mongoose.connect('mongodb://localhost/schema-test');
-  });
+  before(function(done) {
+ 		mockgoose(mongoose).then(function() {
+         	mongoose.connect('mongodb://127.0.0.1:27017/TestingDB', function(err) {
+         	    done(err);
+         	});
+ 		     });
+     });
 
-  afterEach(function () {
-    mongoose.disconnect();
+
+  afterEach(function (done) {
+
     delete mongoose.models.Pet;
     delete mongoose.models.Address;
     delete mongoose.models.Error;
@@ -24,6 +30,10 @@ describe('swagger-mongoose tests', function () {
     delete mongoose.models.House;
     delete mongoose.models.Car;
     delete mongoose.models.Human;
+    mockgoose.reset(function(){
+      done()
+    });
+
   });
 
   it('should create an example pet and return all valid properties', function (done) {
@@ -126,16 +136,14 @@ describe('swagger-mongoose tests', function () {
 
   it('should create an example person with relations to external collections', function (done) {
     var swagger = fs.readFileSync('./test/person.json');
-    var mongooseDef = fs.readFileSync('./test/person.mongoose.json');
 
-    var models = swaggerMongoose.compile(swagger.toString(), mongooseDef.toString()).models;
+
+    var models = swaggerMongoose.compile(swagger.toString()).models;
 
     var Person = models.Person;
     var House = models.House;
     var Car = models.Car;
-
     assert(Person.schema.paths.cars.options.type[0].type === Schema.Types.ObjectId, 'Wrong "car" type');
-    assert(Person.schema.paths.cars.options.type[0].ref === undefined, 'Ref to "car" should be undefined');
     assert(Person.schema.paths.houses.options.type[0].type === Schema.Types.ObjectId, 'Wrong "house" type');
     assert(Person.schema.paths.houses.options.type[0].ref === 'House', 'Ref to "house" should be "House"');
 
@@ -169,7 +177,11 @@ describe('swagger-mongoose tests', function () {
         ],
         cars: [
           results.car._id
-        ]
+        ],
+        phone: {
+          home: "(123) 456-7890",
+          mobile: "(012) 345-6789"
+        }
       });
       person.save(function (err, data) {
         Person
@@ -201,10 +213,209 @@ describe('swagger-mongoose tests', function () {
               assert(newPerson.houses[0].lat === 30, 'House latitude is incorrect');
               assert(newPerson.houses[0].lng === 50.3, 'House longitude is incorrect');
               assert(newPerson.houses[0].description === 'Cool house', 'House description is incorrect');
+              assert(newPerson.phone.home === '(123) 456-7890', 'Home phone number is incorrect');
+              assert(newPerson.phone.mobile === '(012) 345-6789', 'Mobile phone number is incorrect');
 
               done();
             });
           });
+      });
+    });
+  });
+
+  it('should identify return indicies from the swagger document', function (done) {
+      var swagger = fs.readFileSync('./test/person.json');
+      var models = swaggerMongoose.compile(swagger.toString()).models;
+      var Human = models.Human;
+      var Person = models.Person;
+      var House = models.House;
+      assert.propertyVal(Person.schema.paths.login._index, 'unique', 'true', 'Person.login should have a unique index')
+      assert.sameDeepMembers(Human.schema._indexes[0], [ { firstName: 1, lastName: 1 },{ unique: true, background: true } ], 'Human document should have an object of firstName/lastName, and a unique:true object');
+      assert.sameDeepMembers(House.schema._indexes[0], [ { lng: 1, lat: 1 }, { background: true } ], 'House document should have an object of lng/lat, but not a unique key');
+
+      done();
+
+    });
+
+  it('should identify and throw errors on duplicate properties marked unique', function (done) {
+      var swagger = fs.readFileSync('./test/person.json');
+      var models = swaggerMongoose.compile(swagger.toString()).models;
+      var Person = models.Person;
+
+      var person = new Person({
+        login: 'jb@mi6.gov',
+        firstName: 'James',
+        lastName: 'Bond',
+        phone: {
+          home: "(123) 456-7890",
+          mobile: "(012) 345-6789"
+        }
+      });
+      person.save(function(err,data){
+        var copyCat = new Person({
+          login: 'jb@mi6.gov',
+          firstName: 'Jake',
+          lastName: 'Barrington',
+        });
+        copyCat.save(function(err,data){
+          if(err){
+            assert.equal(err.name, 'MongoError');
+            assert.include(err.errmsg, 'duplicate key')
+            assert.include(err.errmsg, 'jb@mi6.gov')
+            done();
+          } else {
+            assert.fail('unique index should have prevented this')
+            done();
+          }
+        })
+      })
+    });
+
+  it('should identify and throw errors on compound indices marked unique', function (done) {
+      var swagger = fs.readFileSync('./test/person.json');
+      var models = swaggerMongoose.compile(swagger.toString()).models;
+      var Human = models.Human;
+      var human = new Human({
+        firstName: 'James',
+        lastName: 'Bond'
+      })
+      human.save(function(err,data){
+        var copyCat = new Human({
+          firstName: 'James',
+          lastName: 'Bond'
+        })
+        copyCat.save(function(err,data){
+          if (err) {
+            assert.equal(err.name, 'MongoError');
+            assert.include(err.errmsg, 'duplicate key')
+            assert.include(err.errmsg, '{ : "James", : "Bond" }')
+            done();
+          } else {
+            assert.ok(data);
+            done();
+          }
+        })
+      })
+
+    });
+
+  it('should allow for external validators', function (done) {
+      var swagger = fs.readFileSync('./test/person.json');
+      var models = swaggerMongoose.compile(swagger.toString()).models;
+      var Person = models.Person;
+
+      var person = new Person({
+        login: 'jb@mi6.gov',
+        firstName: 'James',
+        lastName: 'Bond',
+        phone: {
+          home: "(123) 456-789",
+          mobile: "(012) 345-6789"
+        }
+      });
+
+      person.save(function(err,data){
+        if(err){
+          var expectedErrorMessage = _.get(err, 'errors[\'phone.home\'].message');
+          assert.equal(err.name, 'ValidationError');
+          assert.include(expectedErrorMessage, 'is not a valid home phone number!')
+          done();
+        } else {
+          assert.fail('phone validator should have prevented this')
+          done();
+        }
+      })
+    });
+
+  it('should identify and add enum to schema', function (done) {
+      var swagger = fs.readFileSync('./test/person.json');
+      var models = swaggerMongoose.compile(swagger.toString()).models;
+      var Car = models.Car;
+
+      var car = new Car({
+        provider: 'Soviet Motors',
+        model: 'Gremlin'
+      });
+
+      car.save(function(err,data){
+        if(err){
+          var expectedErrorMessage = _.get(err, 'errors.provider.message');
+          assert.equal(err.name, 'ValidationError');
+          assert.include(expectedErrorMessage, 'is not a valid enum value')
+          done();
+        } else {
+          assert.fail('enum for car should have prevented this')
+          done();
+        }
+      })
+    });
+
+  it('should create an example pet from a JSON object with default schema options', function (done) {
+    var swagger = fs.readFileSync('./test/petstore.json');
+
+    var Pet = swaggerMongoose.compile(JSON.parse(swagger), { default: { timestamps: true }}).models.Pet;
+    var myPet = new Pet({
+      id: 123,
+      name: 'Fluffy'
+    });
+    myPet.save(function (err) {
+      if (err) throw err;
+      Pet.findOne({id: 123}, function (err, data) {
+        assert(data.schema.paths.createdAt, 'createdAt timestamp not found in data');
+        assert(data.schema.paths.updatedAt, 'updatedAt timestamp not found in data');
+        done();
+      });
+    });
+  });
+
+  it('should create an example pet from a JSON object with opposite default schema options', function (done) {
+    var swagger = fs.readFileSync('./test/petstore.json');
+
+    var Pet = swaggerMongoose.compile(JSON.parse(swagger), { default: {'schema-options': { timestamps: false }}}).models.Pet;
+    var myPet = new Pet({
+      id: 123,
+      name: 'Fluffy'
+    });
+    myPet.save(function (err) {
+      if (err) throw err;
+      Pet.findOne({id: 123}, function (err, data) {
+        assert(!data.schema.paths.createdAt, 'createdAt timestamp found in data');
+        assert(!data.schema.paths.updatedAt, 'updatedAt timestamp found in data');
+        done();
+      });
+    });
+  });
+
+  it('should create an example pet from a JSON object with schema specific options overriding default options', function (done) {
+    var swagger = fs.readFileSync('./test/petstore.json');
+    var Pet = swaggerMongoose.compile(JSON.parse(swagger), { default: {'schema-options': { timestamps: true }}, Pet: {'schema-options': { timestamps: false }}}).models.Pet;
+    var myPet = new Pet({
+      id: 123,
+      name: 'Fluffy'
+    });
+    myPet.save(function (err) {
+      if (err) throw err;
+      Pet.findOne({id: 123}, function (err, data) {
+        assert(!data.schema.paths.createdAt, 'createdAt timestamp found in data');
+        assert(!data.schema.paths.updatedAt, 'updatedAt timestamp found in data');
+        done();
+      });
+    });
+  });
+
+  it('should create an example pet from a JSON object with schema specific options overriding default options', function (done) {
+    var swagger = fs.readFileSync('./test/petstore.json');
+    var Pet = swaggerMongoose.compile(JSON.parse(swagger), { default: {'schema-options': { timestamps: false }}, Pet: {'schema-options': { timestamps: true }}}).models.Pet;
+    var myPet = new Pet({
+      id: 123,
+      name: 'Fluffy'
+    });
+    myPet.save(function (err) {
+      if (err) throw err;
+      Pet.findOne({id: 123}, function (err, data) {
+        assert(data.schema.paths.createdAt, 'createdAt timestamp not found in data');
+        assert(data.schema.paths.updatedAt, 'updatedAt timestamp not found in data');
+        done();
       });
     });
   });

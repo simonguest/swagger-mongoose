@@ -1,9 +1,0 @@
-{
-  "Person.properties.houses.items": {
-    "type": "objectId"
-  },
-  "Person.properties.cars.items": {
-    "type": "objectId",
-    "includeSwaggerRef": false
-  }
-}

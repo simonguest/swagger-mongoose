@@ -1,6 +1,6 @@
 {
   "name": "swagger-mongoose",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Generate mongoose schemas and models from swagger documents",
   "main": "./lib/index.js",
   "directories": {
@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/paul42/swagger-mongoose"
+    "url": "https://github.com/simonguest/swagger-mongoose"
   },
   "keywords": [
     "swagger",
@@ -30,10 +30,10 @@
     "mongo",
     "schema"
   ],
-  "author": "Paul.42 <paul.42@gmail.com> (http://github.com/paul42)",
+  "author": "Simon Guest <me@simonguest.com> (http://github.com/simonguest)",
   "license": "Apache 2",
   "bugs": {
-    "url": "https://github.com/paul42/swagger-mongoose/issues"
+    "url": "https://github.com/simonguest/swagger-mongoose/issues"
   },
-  "homepage": "https://github.com/paul42/swagger-mongoose"
+  "homepage": "https://github.com/simonguest/swagger-mongoose"
 }

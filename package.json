@@ -10,10 +10,12 @@
     "lodash": "^4.6.1"
   },
   "devDependencies": {
-    "async": "^2.0.0-rc.1",
+    "async": "^2.0.0",
     "chai": "^3.5.0",
     "mocha": "^2.4.5",
-    "mockgoose": "^6.0.0",
+    "mockgoose": "^6.0.0"
+  },
+  "peerDependencies": {
     "mongodb": "^2.1.11",
     "mongoose": "^4.4.9"
   },

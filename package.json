@@ -13,11 +13,11 @@
     "async": "^2.0.0",
     "chai": "^3.5.0",
     "mocha": "^2.4.5",
-    "mockgoose": "^6.0.0",
-    "mongoose": "^4.4.9"
+    "mockgoose": "^7.0.0",
+    "mongoose": "^4.8.6"
   },
   "peerDependencies": {
-    "mongoose": "^4.4.9"
+    "mongoose": "^4.8.6"
   },
   "scripts": {
     "test": "mocha"

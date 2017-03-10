@@ -4,8 +4,9 @@ var swaggerMongoose = require('./../lib/index');
 var fs = require('fs');
 var async = require('async');
 var mongoose = require('mongoose');
-var mockgoose = require('mockgoose');
-// mockgoose(mongoose);
+mongoose.Promise = global.Promise; // Mongoose's default Promise is deprecated
+var Mockgoose = require('mockgoose').Mockgoose;
+var mockgoose = new Mockgoose(mongoose);
 var assert = require('chai').assert;
 var Schema = mongoose.Schema;
 var _ = require('lodash');
@@ -13,16 +14,15 @@ var _ = require('lodash');
 describe('swagger-mongoose tests', function () {
 
   before(function(done) {
- 		mockgoose(mongoose).then(function() {
-         	mongoose.connect('mongodb://127.0.0.1:27017/TestingDB', function(err) {
-         	    done(err);
-         	});
- 		     });
-     });
+    mockgoose.prepareStorage().then(function() {
+      mongoose.connect('mongodb://127.0.0.1:27017/TestingDB', function(err) {
+        done(err);
+      });
+    });
+  });
 
 
   afterEach(function (done) {
-
     delete mongoose.models.Pet;
     delete mongoose.models.Address;
     delete mongoose.models.Error;
@@ -30,10 +30,10 @@ describe('swagger-mongoose tests', function () {
     delete mongoose.models.House;
     delete mongoose.models.Car;
     delete mongoose.models.Human;
-    mockgoose.reset(function(){
-      done()
+    mockgoose.helper.reset()
+    .then(function () {
+      done();
     });
-
   });
 
   it('should create an example pet and return all valid properties', function (done) {
